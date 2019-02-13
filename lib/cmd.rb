@@ -27,8 +27,8 @@ Type `help` for a list of available commands.', add_hist = true)
 
       if (command_method = get_command_method_symbol(input.split(' ')[0])).nil?
         break if on_unknown_cmd(input)
-      else
-        return if run_command(command_method, input)
+      elsif run_command(command_method, input)
+        break
       end
 
       post_cmd(input)
@@ -104,13 +104,17 @@ Type `help` for a list of available commands.', add_hist = true)
   # Default commands #
   ####################
 
+  # Note: command method definition is similar to pythons cmd.py implementation.
+  #
+  # * `do_foo` defines a command method with the name "foo"
+  # * `help_foo` defines a help command method for the command method "foo"
+
   def help_exit(input)
     puts('Exit the command shell')
   end
 
-  # exit the cmd_loop
-  # return true to exit the cmd_loop
   def do_exit(input)
+    # exit the command loop by returning true
     true
   end
 
@@ -126,7 +130,6 @@ Type `help` for a list of available commands.', add_hist = true)
     puts('Change directory to the path specified')
   end
 
-  # handle the cd command properly
   def do_cd(input)
     if (input != '') && (input.split('cd ')[0] == '')
       Dir.chdir(input.split('cd ')[1])
@@ -146,7 +149,7 @@ Type `help` for a list of available commands.', add_hist = true)
     if input == 'help' # basic `help` command
       puts('Use `help <command name>` to get help on a specific command')
       puts('Below is a list of available commands:')
-      method_commands = self.class.instance_methods(false).select { |s| s.to_s.start_with?('do_')}
+      method_commands = self.class.instance_methods(false).select { |s| s.to_s.start_with?('do_') }
       method_commands.each do |method_symbol|
         puts(method_symbol.to_s[3..-1])
       end
