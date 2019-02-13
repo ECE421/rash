@@ -5,7 +5,7 @@
 
 ## Description
 `rash` is a custom shell made in Ruby implementing some custom features 
-such as: 
+such as a: 
 
 * process time manager 
 * file watcher
