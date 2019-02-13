@@ -1,6 +1,5 @@
 require_relative 'test_helper'
 require_relative '../lib/cmd'
-require 'mocha/test_unit'
 
 class CmdTest < Test::Unit::TestCase
   def setup
