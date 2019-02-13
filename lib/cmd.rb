@@ -2,7 +2,9 @@ require 'readline'
 
 # A simple command shell implementation that is inspired from pythons cmd.py
 class Cmd
-  def initialize(prompt = '> ', welcome = 'Welcome to the base ruby Cmd shell', add_hist = true)
+  def initialize(prompt = '> ',
+                 welcome = 'Welcome to the base ruby Cmd shell.
+Type `help` for a list of available commands.', add_hist = true)
     @prompt = prompt
     @welcome = welcome
     @add_hist = add_hist
