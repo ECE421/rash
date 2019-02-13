@@ -14,4 +14,10 @@ class CmdTest < Test::Unit::TestCase
     shell = Cmd.new
     assert_true(shell.is_a?(Cmd))
   end
+
+  def test_exit
+    shell = Cmd.new
+    Readline.expects(:readline).returns('exit')
+    shell.cmd_loop
+  end
 end
