@@ -28,7 +28,6 @@ Type `help` for a list of available commands.', add_hist = true)
       if (command_method = get_command_method_symbol(input.split(' ')[0])).nil?
         break if on_unknown_cmd(input)
       else
-        puts(input)
         return if run_command(command_method, input)
       end
 
@@ -60,7 +59,13 @@ Type `help` for a list of available commands.', add_hist = true)
   def get_command_method_symbol(input)
     return if input.nil?
 
-    self.class.instance_methods(false).select { |s| s.to_s.eql?('do_' + input) }[0]
+    self.class.instance_methods.select { |s| s.to_s.eql?('do_' + input) }[0]
+  end
+
+  def get_command_help_method_symbol(input)
+    return if input.nil?
+
+    self.class.instance_methods.select { |s| s.to_s.eql?('help_' + input) }[0]
   end
 
   def run_command(command_symbol, input)
@@ -87,8 +92,7 @@ Type `help` for a list of available commands.', add_hist = true)
   # return true to exit the cmd_loop
   # return false to continue the cmd_loop
   def on_unknown_cmd(input)
-    puts('unknown command reverting to system shell')
-    # handle misc system level command
+    puts('WARNING: Unknown command: ' + input + ' reverting to system shell')
     system(input)
     false
   end
@@ -100,14 +104,26 @@ Type `help` for a list of available commands.', add_hist = true)
   # Default commands #
   ####################
 
+  def help_exit(input)
+    puts('Exit the command shell')
+  end
+
   # exit the cmd_loop
   # return true to exit the cmd_loop
   def do_exit(input)
     true
   end
 
+  def help_history(input)
+    puts('Print the history of past issued commands')
+  end
+
   def do_history(input)
     puts Readline::HISTORY.to_a
+  end
+
+  def help_cd(input)
+    puts('Change directory to the path specified')
   end
 
   # handle the cd command properly
@@ -117,6 +133,30 @@ Type `help` for a list of available commands.', add_hist = true)
     else
       # handle misc system level command
       system(input)
+    end
+    false
+  end
+
+  def help_help(input)
+    puts('Print the available commands within this shell.')
+    puts('Use `help <command name>` to get help on a specific command')
+  end
+
+  def do_help(input)
+    if input == 'help' # basic `help` command
+      puts('Use `help <command name>` to get help on a specific command')
+      puts('Below is a list of available commands:')
+      method_commands = self.class.instance_methods(false).select { |s| s.to_s.start_with?('do_')}
+      method_commands.each do |method_symbol|
+        puts(method_symbol.to_s[3..-1])
+      end
+    else # advanced `help <command name>` command
+      target_command = input[5..-1]
+      if (target_command_help_method = get_command_help_method_symbol(target_command)).nil?
+        puts('No help exists for command: ' + target_command)
+      else
+        run_command(target_command_help_method, input)
+      end
     end
     false
   end
