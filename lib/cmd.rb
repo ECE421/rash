@@ -2,8 +2,9 @@ require 'readline'
 
 # A simple command shell implementation that is inspired from pythons cmd.py
 class Cmd
-  def initialize(prompt = '> ', add_hist = true)
+  def initialize(prompt = '> ', welcome = 'Welcome to the base ruby Cmd shell', add_hist = true)
     @prompt = prompt
+    @welcome = welcome
     @add_hist = add_hist
 
     init_line_reader
@@ -13,16 +14,21 @@ class Cmd
   def cmd_loop
     pre_loop
 
+    puts(@welcome)
+
     while (input = @line_reader.readline(@prompt, @add_hist))
       init_line_reader
 
-      pre_cmd(input)
-
-      break if exit_cmd(input)
-
       manage_history(input) if @add_hist
 
-      break if on_cmd(input)
+      pre_cmd(input)
+
+      if (command_method = get_command_method_symbol(input.split(' ')[0])).nil?
+        break if on_unknown_cmd(input)
+      else
+        puts(input)
+        return if run_command(command_method, input)
+      end
 
       post_cmd(input)
 
@@ -49,9 +55,18 @@ class Cmd
     @line_reader = Readline
   end
 
+  def get_command_method_symbol(input)
+    return if input.nil?
+
+    self.class.instance_methods(false).select { |s| s.to_s.eql?('do_' + input) }[0]
+  end
+
+  def run_command(command_symbol, input)
+    send(command_symbol, input)
+  end
+
   # command history commands and management on a command
   def manage_history(input)
-    puts Readline::HISTORY.to_a if input == 'hist'
     # Remove blank lines from history
     Readline::HISTORY.pop if input == ''
   end
@@ -65,19 +80,36 @@ class Cmd
   # hook that is executed before the command input is executed
   def pre_cmd(input); end
 
-  # check if we should exit the cmd_loop
-  # via an exit command
-  # return true to exit the cmd_loop, otherwise, continue the cmd_loop
-  def exit_cmd(input)
-    true if input == 'exit'
-  end
-
-  # hook to execute the command input
+  # hook to execute the unknown/unsupported command input
   #
   # return true to exit the cmd_loop
   # return false to continue the cmd_loop
-  def on_cmd(input)
-    # handle the cd command properly
+  def on_unknown_cmd(input)
+    puts('unknown command reverting to system shell')
+    # handle misc system level command
+    system(input)
+    false
+  end
+
+  # hook that is executed after the command input is executed
+  def post_cmd(input); end
+
+  ####################
+  # Default commands #
+  ####################
+
+  # exit the cmd_loop
+  # return true to exit the cmd_loop
+  def do_exit(input)
+    true
+  end
+
+  def do_history(input)
+    puts Readline::HISTORY.to_a
+  end
+
+  # handle the cd command properly
+  def do_cd(input)
     if (input != '') && (input.split('cd ')[0] == '')
       Dir.chdir(input.split('cd ')[1])
     else
@@ -86,7 +118,4 @@ class Cmd
     end
     false
   end
-
-  # hook that is executed after the command input is executed
-  def post_cmd(input); end
 end
