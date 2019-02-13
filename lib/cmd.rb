@@ -65,17 +65,17 @@ class Cmd
   # hook that is executed before the command input is executed
   def pre_cmd(input); end
 
-  # check if we should exit the cmdloop
+  # check if we should exit the cmd_loop
   # via an exit command
-  # return true to exit the cmdloop, otherwise, continue the cmdloop
+  # return true to exit the cmd_loop, otherwise, continue the cmd_loop
   def exit_cmd(input)
     true if input == 'exit'
   end
 
   # hook to execute the command input
   #
-  # return true to exit the cmdloop
-  # return false to continue the cmdloop
+  # return true to exit the cmd_loop
+  # return false to continue the cmd_loop
   def on_cmd(input)
     # handle the cd command properly
     if (input != '') && (input.split('cd ')[0] == '')
