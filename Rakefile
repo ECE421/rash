@@ -1,5 +1,9 @@
-task default: %w[test]
+require 'rake/testtask'
 
-task :test do
-  ruby 'test/*.rb'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/*_test.rb'
+  test.verbose = true
 end
+
+task default: :test
