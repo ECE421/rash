@@ -3,7 +3,7 @@ require_relative '../lib/cmd'
 
 class CmdTest < Test::Unit::TestCase
   def setup
-    # Do nothing
+    @shell = Cmd.new
   end
 
   def teardown
@@ -11,13 +11,36 @@ class CmdTest < Test::Unit::TestCase
   end
 
   def test_initialization
-    shell = Cmd.new
-    assert_true(shell.is_a?(Cmd))
+    assert_true(@shell.is_a?(Cmd))
   end
 
   def test_exit
-    shell = Cmd.new
-    Readline.expects(:readline).returns('exit')
-    shell.cmd_loop
+    Readline.expects(:readline)
+            .returns('exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_help
+    Readline.stubs(:readline)
+            .returns('help', 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_help_methods
+    Readline.stubs(:readline)
+            .returns('help help', 'help cd', 'help history', 'help exit', 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_cd_empty
+    Readline.stubs(:readline)
+            .returns('cd', 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_history
+    Readline.stubs(:readline)
+            .returns('foo', 'foo', 'foo', 'history', 'exit')
+    @shell.cmd_loop
   end
 end
