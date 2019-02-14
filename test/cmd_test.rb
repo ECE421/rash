@@ -1,5 +1,4 @@
-require_relative 'test_helper'
-require_relative '../lib/cmd'
+require_relative 'helper'
 
 class CmdTest < Test::Unit::TestCase
   def setup
