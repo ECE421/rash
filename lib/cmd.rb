@@ -34,7 +34,7 @@ Type `help` for a list of available commands.', add_hist = true)
 
     while (input = Readline.readline(@prompt, @add_hist))
       # Remove blank lines from history if history is enabled
-      Readline::HISTORY.pop if @add_hist and input == ''
+      Readline::HISTORY.pop if @add_hist && input == ''
 
       pre_cmd(input)
 
