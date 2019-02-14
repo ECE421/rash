@@ -32,9 +32,21 @@ class CmdTest < Test::Unit::TestCase
     @shell.cmd_loop
   end
 
+  def test_smoke_help_nonsuch
+    Readline.stubs(:readline)
+            .returns('help nonsuch', 'exit')
+    @shell.cmd_loop
+  end
+
   def test_smoke_cd_empty
     Readline.stubs(:readline)
             .returns('cd', 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_cd
+    Readline.stubs(:readline)
+            .returns('cd .', 'exit')
     @shell.cmd_loop
   end
 
