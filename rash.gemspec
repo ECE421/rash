@@ -12,6 +12,5 @@ some custom features such as: a process time manager and a file watcher"
   s.homepage = 'https://github.com/ECE421/rash'
 
   s.files = FileList['lib/*.rb'].to_a
-  s.test_files = FileList['test/*.rb'].to_a
-  s.require_paths = %w[lib test]
+  s.test_files = FileList['test/*_test.rb'].to_a
 end
