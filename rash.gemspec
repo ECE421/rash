@@ -9,6 +9,9 @@ Gem::Specification.new do |s|
 some custom features such as: a process time manager and a file watcher"
   s.authors = ['Nathan Klapstein', 'Thomas Lorincz']
   s.email = 'nklapste@ualberta.ca'
-  s.files = FileList['lib/*.rb', 'bin/*', 'test/*.rb'].to_a
   s.homepage = 'https://github.com/ECE421/rash'
+
+  s.files = ['lib/cmd.rb']
+  s.test_files = FileList['test/*.rb'].to_a
+  s.require_paths = ['lib']
 end

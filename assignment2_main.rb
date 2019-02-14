@@ -7,7 +7,7 @@
 #   Zach Drever (1446384)
 #
 
-require_relative 'lib/cmd'
+require 'cmd'
 
 shell = Cmd.new
 shell.cmd_loop

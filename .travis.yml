@@ -22,4 +22,4 @@ jobs:
       before_install:
         - gem install test-unit
       script:
-        - bundle exec ruby test/*.rb
+        - bundle exec rake
