@@ -6,24 +6,16 @@ require 'method_source'
 class Cmd
   def initialize(prompt = 'rash> ',
                  welcome = 'Welcome to the base ruby Cmd shell.
-Type `help` for a list of available commands.', add_hist = true)
+Type `help` for a list of available commands.')
     @prompt = prompt
     @welcome = welcome
-    @add_hist = add_hist
 
     init_line_reader
   end
 
-  # Setup Readline with directory and history auto-completion.
+  # Setup +Readline+ with history auto-completion.
   def init_line_reader
-    comp = proc do |s|
-      directory_list = Dir.glob("#{s}*")
-      if !directory_list.empty?
-        directory_list
-      elsif @add_hist
-        Readline::HISTORY.grep(/^#{Regexp.escape(s)}/)
-      end
-    end
+    comp = proc { |s| Readline::HISTORY.grep(/^#{Regexp.escape(s)}/) }
     Readline.completion_append_character = ' '
     Readline.completion_proc = comp
   end
@@ -34,9 +26,12 @@ Type `help` for a list of available commands.', add_hist = true)
 
     puts(@welcome)
 
-    while (input = Readline.readline(@prompt, @add_hist))
-      # Remove blank lines from history if history is enabled
-      Readline::HISTORY.pop if @add_hist && input == ''
+    while (input = Readline.readline(@prompt, true))
+      # Remove blank lines from history and skip executing this command
+      if /^\s*$/.match?(input)
+        Readline::HISTORY.pop
+        next
+      end
 
       pre_cmd(input)
 
@@ -47,9 +42,6 @@ Type `help` for a list of available commands.', add_hist = true)
       end
 
       post_cmd(input)
-
-      # re-init Readline after a command has executed
-      init_line_reader
     end
 
     post_loop
@@ -68,8 +60,7 @@ Type `help` for a list of available commands.', add_hist = true)
   # return +true+ to exit the +cmd_loop+
   # return +false+ to continue the +cmd_loop+
   def on_unknown_cmd(input)
-    puts('WARNING: Unknown command: ' + input + ' reverting to system shell')
-    system(input)
+    puts('Unknown command: ' + input)
     false
   end
 
@@ -130,17 +121,6 @@ Type `help` for a list of available commands.', add_hist = true)
   # Print the history of past issued commands.
   def do_history(input)
     puts(Readline::HISTORY.to_a)
-  end
-
-  # Change directory to the path specified.
-  def do_cd(input)
-    if (input != '') && (input.split('cd ')[0] == '')
-      Dir.chdir(input.split('cd ')[1])
-    else
-      # handle misc system level command
-      system(input)
-    end
-    false
   end
 
   ######

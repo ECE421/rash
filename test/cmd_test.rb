@@ -27,7 +27,7 @@ class CmdTest < Test::Unit::TestCase
 
   def test_smoke_help_methods
     Readline.stubs(:readline)
-            .returns('help help', 'help cd', 'help history', 'help exit', 'exit')
+            .returns('help help', 'help history', 'help exit', 'exit')
     @shell.cmd_loop
   end
 
@@ -37,21 +37,15 @@ class CmdTest < Test::Unit::TestCase
     @shell.cmd_loop
   end
 
-  def test_smoke_cd_empty
-    Readline.stubs(:readline)
-            .returns('cd', 'exit')
-    @shell.cmd_loop
-  end
-
-  def test_smoke_cd
-    Readline.stubs(:readline)
-            .returns('cd .', 'exit')
-    @shell.cmd_loop
-  end
-
   def test_smoke_history
     Readline.stubs(:readline)
             .returns('foo', 'foo', 'foo', 'history', 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_history_blank
+    Readline.stubs(:readline)
+            .returns('', '  ', '   ', 'history', 'exit')
     @shell.cmd_loop
   end
 end
