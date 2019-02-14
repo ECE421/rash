@@ -87,13 +87,13 @@ Type `help` for a list of available commands.', add_hist = true)
   # * +do_foo+ defines a command method for the command named +foo+
   # * +help_foo+ defines a help print command method for the command named +foo+
   #
-  # Note: If no +help_foo+ help print command method is defined,
-  # the documentation comments above the +do_foo+ command method will
-  # be used as a help message. If no such documentation comment
-  # exists for the +do_foo+ command method, a message stating that
-  # no help is available for the command +foo+ will be displayed.
+  # Note: If no +help_foo+ help print command method is defined, the documentation
+  # comments above the +do_foo+ command method will be used as a help message.
+  # If no such documentation comment exists for the +do_foo+ command method,
+  # a message stating that no help is available for the command +foo+ will be
+  # displayed.
   #
-  # Note: If a +do_<command_name>+ method returns +true+ it will terminate
+  # Note: If a +do_<command_name>+ command method returns +true+ it will terminate
   # the +cmd_loop+.
 
   def help_help(input)
