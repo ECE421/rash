@@ -103,7 +103,7 @@ Type `help` for a list of available commands.', add_hist = true)
   end
 
   def do_history(input)
-    puts Readline::HISTORY.to_a
+    puts(Readline::HISTORY.to_a)
   end
 
   def help_cd(input)
