@@ -12,36 +12,7 @@ Type `help` for a list of available commands.', add_hist = true)
     init_line_reader
   end
 
-  # start the command shell command input/execution loop
-  def cmd_loop
-    pre_loop
-
-    puts(@welcome)
-
-    while (input = @line_reader.readline(@prompt, @add_hist))
-      init_line_reader
-
-      manage_history(input) if @add_hist
-
-      pre_cmd(input)
-
-      if (command_method = get_command_method_symbol(input.split(' ')[0])).nil?
-        break if on_unknown_cmd(input)
-      elsif run_command(command_method, input)
-        break
-      end
-
-      post_cmd(input)
-
-      init_line_reader
-    end
-
-    post_loop
-  end
-
-  protected
-
-  # setup a line reader with directory and history auto-completion
+  # Setup Readline with directory and history auto-completion.
   def init_line_reader
     comp = proc do |s|
       directory_list = Dir.glob("#{s}*")
@@ -53,41 +24,44 @@ Type `help` for a list of available commands.', add_hist = true)
     end
     Readline.completion_append_character = ' '
     Readline.completion_proc = comp
-    @line_reader = Readline
   end
 
-  def get_command_method_symbol(input)
-    return if input.nil?
+  # Start the command input loop.
+  def cmd_loop
+    pre_loop
 
-    self.class.instance_methods.select { |s| s.to_s.eql?('do_' + input) }[0]
+    puts(@welcome)
+
+    while (input = Readline.readline(@prompt, @add_hist))
+      # Remove blank lines from history if history is enabled
+      Readline::HISTORY.pop if @add_hist and input == ''
+
+      pre_cmd(input)
+
+      if !(command_method = get_command_method_symbol(input.split(' ')[0])).nil?
+        break if send(command_method, input)
+      elsif on_unknown_cmd(input)
+        break
+      end
+
+      post_cmd(input)
+
+      # re-init Readline after a command has executed
+      init_line_reader
+    end
+
+    post_loop
   end
 
-  def get_command_help_method_symbol(input)
-    return if input.nil?
+  protected
 
-    self.class.instance_methods.select { |s| s.to_s.eql?('help_' + input) }[0]
-  end
-
-  def run_command(command_symbol, input)
-    send(command_symbol, input)
-  end
-
-  # command history commands and management on a command
-  def manage_history(input)
-    # Remove blank lines from history
-    Readline::HISTORY.pop if input == ''
-  end
-
-  # hook that is executed before the command input loop starts
+  # Hook that is executed before the command input loop starts.
   def pre_loop; end
 
-  # hook that is executed after the command input loop ends
-  def post_loop; end
-
-  # hook that is executed before the command input is executed
+  # Hook that is executed before the command input is executed.
   def pre_cmd(input); end
 
-  # hook to execute the unknown/unsupported command input
+  # Hook to execute the unknown/unsupported command input.
   #
   # return true to exit the cmd_loop
   # return false to continue the cmd_loop
@@ -97,24 +71,29 @@ Type `help` for a list of available commands.', add_hist = true)
     false
   end
 
-  # hook that is executed after the command input is executed
+  # Hook that is executed after the command input is executed.
   def post_cmd(input); end
+
+  # Hook that is executed after the command input loop ends.
+  def post_loop; end
 
   ####################
   # Default commands #
   ####################
 
-  # Note: command method definition is similar to pythons cmd.py implementation.
+  # Note: command method definition is similar to pythons `cmd.py` implementation.
+  # * `do_foo` defines a command method for the command named "foo"
+  # * `help_foo` defines a help print command method for the command named "foo"
   #
-  # * `do_foo` defines a command method with the name "foo"
-  # * `help_foo` defines a help command method for the command method "foo"
+  # Note: if a `do_<command name>` method returns true it will terminate
+  # the cmd_loop.
 
   def help_exit(input)
     puts('Exit the command shell')
   end
 
+  # Exit the command loop by returning true.
   def do_exit(input)
-    # exit the command loop by returning true
     true
   end
 
@@ -155,12 +134,32 @@ Type `help` for a list of available commands.', add_hist = true)
       end
     else # advanced `help <command name>` command
       target_command = input[5..-1]
-      if (target_command_help_method = get_command_help_method_symbol(target_command)).nil?
-        puts('No help exists for command: ' + target_command)
+      if !(target_command_help_method = get_command_help_method_symbol(target_command)).nil?
+        send(target_command_help_method, input)
       else
-        run_command(target_command_help_method, input)
+        puts('No help exists for command: ' + target_command)
       end
     end
     false
+  end
+
+  ######
+  # Dynamic `do_<command name>` and `help_<command name>` utilities
+  ######
+
+  # Given a command name obtain the symbol representing its
+  # corresponding `do_<command name>` method.
+  def get_command_method_symbol(input)
+    return if input.nil?
+
+    self.class.instance_methods.select { |s| s.to_s.eql?('do_' + input) }[0]
+  end
+
+  # Given a command name obtain the symbol representing its
+  # corresponding `help_<command name>` method.
+  def get_command_help_method_symbol(input)
+    return if input.nil?
+
+    self.class.instance_methods.select { |s| s.to_s.eql?('help_' + input) }[0]
   end
 end
