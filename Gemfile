@@ -7,4 +7,5 @@ gem 'rubocop', require: false, group: :test
 gem 'simplecov', require: false, group: :test
 gem 'test-unit', require: false, group: :test
 
+gem 'method_source'
 gem 'rake'
