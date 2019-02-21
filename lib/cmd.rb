@@ -34,9 +34,10 @@ Type `help` for a list of available commands.')
       end
 
       pre_cmd(input)
-
-      if !(command_method = get_command_method_symbol(input.split(' ')[0])).nil?
-        break if send(command_method, input)
+      command_name = input.split(' ')[0]
+      command_args = input[input.split(' ')[0].length..-1].lstrip
+      if !(command_method = get_command_method_symbol(command_name)).nil?
+        break if send(command_method, command_args)
       elsif on_unknown_cmd(input)
         break
       end
@@ -87,13 +88,13 @@ Type `help` for a list of available commands.')
   # Note: If a +do_<command_name>+ command method returns +true+ it will terminate
   # the +cmd_loop+.
 
-  def help_help(input)
+  def help_help(arg)
     puts('Print the available commands within this shell.')
     puts('Use `help <command name>` to get help on a specific command')
   end
 
-  def do_help(input)
-    if input == 'help' # basic +help+ command
+  def do_help(arg)
+    if arg == '' # basic +help+ command
       puts('Use `help <command_name>` to get help on a specific command')
       puts('Below is a list of available commands:')
       method_commands = self.class.instance_methods(false).select { |s| s.to_s.start_with?('do_') }
@@ -101,9 +102,9 @@ Type `help` for a list of available commands.')
         puts(method_symbol.to_s[3..-1])
       end
     else # advanced +help <command_name>+ command
-      target_command = input[5..-1]
+      target_command = arg
       if !(target_command_help_method = get_command_help_method_symbol(target_command)).nil?
-        send(target_command_help_method, input)
+        send(target_command_help_method, arg)
       elsif !(target_command_method_help_comment = get_command_method_help_comment(target_command)).nil?
         puts(target_command_method_help_comment)
       else
@@ -114,12 +115,12 @@ Type `help` for a list of available commands.')
   end
 
   # Exit the command shell.
-  def do_exit(input)
+  def do_exit(arg)
     true
   end
 
   # Print the history of past issued commands.
-  def do_history(input)
+  def do_history(arg)
     puts(Readline::HISTORY.to_a)
   end
 
