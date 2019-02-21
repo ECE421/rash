@@ -89,13 +89,15 @@ Type `help` for a list of available commands.')
   # the +cmd_loop+.
 
   def help_help(arg)
-    puts('Print the available commands within this shell.')
-    puts('Use `help <command name>` to get help on a specific command')
+    puts('Usage: help [COMMAND]')
+    puts('')
+    puts('List the available commands within this shell.')
+    puts('If COMMAND is given get help on the specified command.')
   end
 
   def do_help(arg)
     if arg == '' # basic +help+ command
-      puts('Use `help <command_name>` to get help on a specific command')
+      puts('Use `help COMMAND` to get help on a specific command')
       puts('Below is a list of available commands:')
       method_commands = self.class.instance_methods(false).select { |s| s.to_s.start_with?('do_') }
       method_commands.each do |method_symbol|
@@ -114,11 +116,15 @@ Type `help` for a list of available commands.')
     false
   end
 
+  # Usage: exit
+  #
   # Exit the command shell.
   def do_exit(arg)
     true
   end
 
+  # Usage: history
+  #
   # Print the history of past issued commands.
   def do_history(arg)
     puts(Readline::HISTORY.to_a)
