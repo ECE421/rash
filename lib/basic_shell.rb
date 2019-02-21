@@ -94,9 +94,9 @@ Type `help` for a list of available commands.')
   def do_cat(arg)
     args = arg.split(' ')
     args.each do |filename|
-      f = File.open(filename)
-      f.readlines.each(&method(:puts))
-      f.close
+      file = File.open(filename)
+      file.readlines.each(&method(:puts))
+      file.close
     end
     false
   end
@@ -109,7 +109,8 @@ Type `help` for a list of available commands.')
   def do_touch(arg)
     args = arg.split(' ')
     args.each do |filename|
-      File.open(filename, mode = 'w').close # rubocop:disable Lint/UselessAssignment:
+      file = File.open(filename, mode = 'w') # rubocop:disable Lint/UselessAssignment:
+      file.close
     end
     false
   end
@@ -122,8 +123,8 @@ Type `help` for a list of available commands.')
   def do_write(arg)
     filename = arg.split(' ')[0]
     content = arg[filename.length + 1..-1]
-    f = File.open(filename, mode = 'w')
-    f.syswrite(content)
-    f.close
+    file = File.open(filename, mode = 'w') # rubocop:disable Lint/UselessAssignment:
+    file.syswrite(content)
+    file.close
   end
 end
