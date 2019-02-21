@@ -159,7 +159,7 @@ Type `help` for a list of available commands.')
 
   # Clean a command method comment string to be more console readable.
   def clean_help_comment(raw_comment)
-    raw_comment.gsub!(/^# /, '')
+    raw_comment.gsub!(/(^# |^#)/, '')
     raw_comment.strip
   end
 end
