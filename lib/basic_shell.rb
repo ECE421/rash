@@ -34,10 +34,12 @@ Type `help` for a list of available commands.')
     end
   end
 
-  # Usage: cd DIRECTORY
+  # Usage: cd [DIRECTORY]
   #
   # Change the current working DIRECTORY.
   def do_cd(arg)
+    return false if arg == ''
+
     Dir.chdir(arg)
     # TODO: error handling (permission/non-such)
     false
