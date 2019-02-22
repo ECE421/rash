@@ -12,3 +12,4 @@ require 'test/unit'
 require 'mocha/test_unit'
 
 require 'cmd'
+require 'basic_shell'
