@@ -8,7 +8,19 @@ if ENV['CI'] == 'true'
   SimpleCov.formatter = SimpleCov::Formatter::Codecov
 end
 
+require 'tempfile'
+
+def create_tempfile_test_file(name, content)
+  tempfile = Tempfile.new(name)
+  tfd = tempfile.open
+  tfd.write(content)
+  tfd.close
+  assert_true(File.exist?(tempfile.path.to_s))
+  tempfile
+end
+
 require 'test/unit'
 require 'mocha/test_unit'
 
 require 'cmd'
+require 'basic_shell'
