@@ -60,10 +60,7 @@ class BasicShellTest < Test::Unit::TestCase
     pwd = Dir.pwd
     Readline.stubs(:readline)
             .returns('pwd', 'exit')
-
-    output = capture_output do
-      @shell.cmd_loop
-    end
+    output = capture_output { @shell.cmd_loop }
     assert_true(output.to_s.include?(pwd))
   end
 
@@ -81,21 +78,21 @@ class BasicShellTest < Test::Unit::TestCase
     Readline.stubs(:readline)
             .returns('cd .', 'exit')
     @shell.cmd_loop
-    new_pwd = Dir.pwd
-    assert_equal(old_pwd, new_pwd)
+    assert_equal(old_pwd, Dir.pwd)
   end
 
   def test_cd_dir
     old_pwd = Dir.pwd
-    dir = Dir.mktmpdir('rash_basic_shell_tests-')
+    tmpdir = Dir.mktmpdir('rash_basic_shell_tests-')
+
     Readline.stubs(:readline)
-            .returns('cd ' + dir, 'exit')
+            .returns('cd ' + tmpdir, 'exit')
     @shell.cmd_loop
-    new_pwd = Dir.pwd
-    assert_not_equal(old_pwd, new_pwd)
+    assert_not_equal(old_pwd, Dir.pwd)
+
     Dir.chdir(old_pwd)
     assert_equal(old_pwd, Dir.pwd)
-    FileUtils.rm_rf dir
+    FileUtils.rm_rf tmpdir
   end
 
   def test_smoke_fork
@@ -112,43 +109,40 @@ class BasicShellTest < Test::Unit::TestCase
 
   def test_touch
     old_pwd = Dir.pwd
-    dir = Dir.mktmpdir('rash_basic_shell_tests-')
-    Dir.chdir(dir)
-    assert_equal(dir, Dir.pwd)
+    tmpdir = Dir.mktmpdir('rash_basic_shell_tests-')
+    Dir.chdir(tmpdir)
+
     Readline.stubs(:readline)
             .returns('touch test_file', 'exit')
     @shell.cmd_loop
+
     assert_true(File.exist?('test_file'))
+
     Dir.chdir(old_pwd)
     assert_equal(old_pwd, Dir.pwd)
-    FileUtils.rm_rf dir
+    FileUtils.rm_rf tmpdir
   end
 
   def test_cat
-    tempfile = create_tempfile_test_file('test_file', 'test content')
-    Readline.stubs(:readline)
-            .returns('cat ' + tempfile.path.to_s, 'exit')
+    test_file = create_tempfile_test_file('test_file', 'test content')
 
+    Readline.stubs(:readline)
+            .returns('cat ' + test_file.path.to_s, 'exit')
     output = capture_output do
       @shell.cmd_loop
     end
 
-    puts(output.to_s)
     assert_true(output.to_s.include?('test content'))
   end
 
   def test_cat_multiple
-    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
+    test_file1 = create_tempfile_test_file('test_file1', 'test content 1')
+    test_file2 = create_tempfile_test_file('test_file2', 'test content 2')
 
     Readline.stubs(:readline)
-            .returns('cat ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
+            .returns('cat ' + test_file1.path.to_s + ' ' + test_file2.path.to_s, 'exit')
+    output = capture_output { @shell.cmd_loop }
 
-    output = capture_output do
-      @shell.cmd_loop
-    end
-
-    puts(output.to_s)
     assert_true(output.to_s.include?('test content 1'))
     assert_true(output.to_s.include?('test content 2'))
   end
@@ -166,53 +160,50 @@ class BasicShellTest < Test::Unit::TestCase
   end
 
   def test_rm
-    tempfile = create_tempfile_test_file('test_file', 'test content')
-    Readline.stubs(:readline)
-            .returns('rm ' + tempfile.path.to_s, 'exit')
+    test_file = create_tempfile_test_file('test_file', 'test content')
 
+    Readline.stubs(:readline)
+            .returns('rm ' + test_file.path.to_s, 'exit')
     @shell.cmd_loop
 
-    assert_false(File.exist?(tempfile.path.to_s))
+    assert_false(File.exist?(test_file.path.to_s))
   end
 
   def test_rm_multiple
-    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
+    test_file1 = create_tempfile_test_file('test_file1', 'test content 1')
+    test_file2 = create_tempfile_test_file('test_file2', 'test content 2')
 
     Readline.stubs(:readline)
-            .returns('rm ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
-
+            .returns('rm ' + test_file1.path.to_s + ' ' + test_file2.path.to_s, 'exit')
     @shell.cmd_loop
 
-    assert_false(File.exist?(tempfile1.path.to_s))
-    assert_false(File.exist?(tempfile2.path.to_s))
+    assert_false(File.exist?(test_file1.path.to_s))
+    assert_false(File.exist?(test_file2.path.to_s))
   end
 
   def test_mv
-    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
+    test_file1 = create_tempfile_test_file('test_file1', 'test content 1')
+    test_file2 = create_tempfile_test_file('test_file2', 'test content 2')
 
     Readline.stubs(:readline)
-            .returns('mv ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
-
+            .returns('mv ' + test_file1.path.to_s + ' ' + test_file2.path.to_s, 'exit')
     @shell.cmd_loop
 
-    assert_false(File.exist?(tempfile1.path.to_s))
-    assert_true(File.exist?(tempfile2.path.to_s))
-    assert_equal(File.open(tempfile2.path.to_s).read, 'test content 1')
+    assert_false(File.exist?(test_file1.path.to_s))
+    assert_true(File.exist?(test_file2.path.to_s))
+    assert_equal(File.open(test_file2.path.to_s).read, 'test content 1')
   end
 
   def test_cp
-    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
+    test_file1 = create_tempfile_test_file('test_file1', 'test content 1')
+    test_file2 = create_tempfile_test_file('test_file2', 'test content 2')
 
     Readline.stubs(:readline)
-            .returns('cp ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
-
+            .returns('cp ' + test_file1.path.to_s + ' ' + test_file2.path.to_s, 'exit')
     @shell.cmd_loop
 
-    assert_true(File.exist?(tempfile1.path.to_s))
-    assert_true(File.exist?(tempfile2.path.to_s))
-    assert_equal(File.open(tempfile2.path.to_s).read, 'test content 1')
+    assert_true(File.exist?(test_file1.path.to_s))
+    assert_true(File.exist?(test_file2.path.to_s))
+    assert_equal(File.open(test_file2.path.to_s).read, 'test content 1')
   end
 end
