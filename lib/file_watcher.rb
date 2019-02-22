@@ -13,23 +13,26 @@ Type `help` for a list of available commands.')
     @d_behaviours = %w[d destroy destruction delete deletion]
   end
 
-  def do_watch(*args)
-    behaviour, duration, filenames = args[0].split(' ')
+  def do_watch(args_string)
+    behaviour, duration, *filenames = args_string.split(' ')
 
     if @c_behaviours.include?(behaviour)
-      thread = Thread.start { watch(duration, filenames) }
+      thread = Thread.start { watch_create(duration.to_i, filenames) }
       puts("Started thread: #{thread}")
       @threads.push(thread)
     elsif @a_behaviours.include?(behaviour)
-      thread = Thread.start { watch(duration, filenames) }
+      thread = Thread.start { watch_alter(duration.to_i, filenames) }
       puts("Started thread: #{thread}")
       @threads.push(thread)
     elsif @d_behaviours.include?(behaviour)
-      thread = Thread.start { watch(duration, filenames) }
+      thread = Thread.start { watch_delete(duration.to_i, filenames) }
       puts("Started thread: #{thread}")
       @threads.push(thread)
     else
-      "You gave me #{behaviour} -- I have no idea what to do with that."
+      puts("Invalid behaviour #{behaviour}. Please use one of the following behaviours:")
+      puts("\tCreate: #{@c_behaviours}")
+      puts("\tAlter/Modify: #{@a_behaviours}")
+      puts("\tDelete: #{@d_behaviours}")
     end
 
     false
@@ -42,8 +45,33 @@ Type `help` for a list of available commands.')
 
   private
 
-  def watch(duration, filenames)
-    abort
+  def watch_create(duration, filenames)
+    while true
+      filenames.each do |file|
+        file
+      end
+    end
+  end
+
+  def watch_alter(duration, filenames)
+    while true
+      filenames.each do |file|
+        file
+      end
+    end
+  end
+
+  def watch_delete(duration, filenames)
+    while true
+      filenames.each do |file|
+        file
+      end
+    end
+  end
+
+  def act_after_change(duration, action = "puts('Hello, security vulnerability!')")
+    sleep(duration)
+    eval(action)
   end
 
   def post_loop
