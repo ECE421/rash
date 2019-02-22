@@ -15,6 +15,9 @@ class BasicShellTest < Test::Unit::TestCase
     assert_true(@shell.is_a?(BasicShell))
   end
 
+  # Smokes that ensure functionality from Cmd is maintained
+  # TODO: is there a better way to test this with inheritance?
+
   def test_exit
     Readline.expects(:readline)
             .returns('exit')
@@ -50,6 +53,8 @@ class BasicShellTest < Test::Unit::TestCase
             .returns('', '  ', '   ', 'history', 'exit')
     @shell.cmd_loop
   end
+
+  # new functionality within BasicShell
 
   def test_pwd
     pwd = Dir.pwd
