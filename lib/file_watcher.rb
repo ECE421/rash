@@ -47,31 +47,34 @@ Type `help` for a list of available commands.')
 
   def watch_create(duration, filenames)
     while true
-      filenames.each do |file|
-        file
+      filenames.each do |_|
+        nil
       end
     end
   end
 
   def watch_alter(duration, filenames)
     while true
-      filenames.each do |file|
-        file
+      filenames.each do |_|
+        nil
       end
     end
   end
 
   def watch_delete(duration, filenames)
     while true
-      filenames.each do |file|
-        file
+      filenames.each do |_|
+        nil
       end
     end
   end
 
-  def act_after_change(duration, action = "puts('Hello, security vulnerability!')")
+  def action_after_change(duration, action = "puts('Hello, security vulnerability!')")
     sleep(duration)
-    eval(action)
+    proc {
+      $SAFE = 4
+      eval(action)
+    }.call
   end
 
   def post_loop
