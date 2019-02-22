@@ -189,8 +189,8 @@ class BasicShellTest < Test::Unit::TestCase
   end
 
   def test_mv
-    tempfile1 = create_tempfile_test_file('testfile1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('testfile2', 'test content 2')
+    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
+    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
 
     Readline.stubs(:readline)
             .returns('mv ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
@@ -203,8 +203,8 @@ class BasicShellTest < Test::Unit::TestCase
   end
 
   def test_cp
-    tempfile1 = create_tempfile_test_file('testfile1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('testfile2', 'test content 2')
+    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
+    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
 
     Readline.stubs(:readline)
             .returns('cp ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
