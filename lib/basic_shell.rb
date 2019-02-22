@@ -137,11 +137,14 @@ Type `help` for a list of available commands.')
     file.close
   end
 
+  # Usage: fork COMMAND
+  #
+  # Fork and run the raw system COMMAND as a detached process.
   def do_fork(arg)
     r, w = IO.pipe
     pid = Process.spawn(arg, out: w)
     Process.detach pid
-    puts 'spawned process under pid: '+ pid.to_s
+    puts 'spawned process under pid: ' + pid.to_s
     w.close
     r.close
     false
@@ -152,7 +155,7 @@ Type `help` for a list of available commands.')
   # Send a system specific SIGNAL to the process(es) specified by the PID(s)
   def do_kill(arg)
     signal = arg.split(' ')[0]
-    pids = arg[signal.length+1..-1].split(' ')
+    pids = arg[signal.length + 1..-1].split(' ')
     pids.each do |pid|
       Process.kill(signal, pid)
       # TODO: error handling (non-such-signal/non-such-pid)
