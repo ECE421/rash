@@ -196,4 +196,32 @@ class BasicShellTest < Test::Unit::TestCase
     assert_false(File.exist?(tempfile1.path.to_s))
     assert_false(File.exist?(tempfile2.path.to_s))
   end
+
+  def test_mv
+    tempfile1 = create_tempfile_test_file('testfile1', 'test content 1')
+    tempfile2 = create_tempfile_test_file('testfile2', 'test content 2')
+
+    Readline.stubs(:readline)
+            .returns('mv ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
+
+    @shell.cmd_loop
+
+    assert_false(File.exist?(tempfile1.path.to_s))
+    assert_true(File.exist?(tempfile2.path.to_s))
+    assert_equal(File.open(tempfile2.path.to_s).read, 'test content 1')
+  end
+
+  def test_cp
+    tempfile1 = create_tempfile_test_file('testfile1', 'test content 1')
+    tempfile2 = create_tempfile_test_file('testfile2', 'test content 2')
+
+    Readline.stubs(:readline)
+            .returns('cp ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
+
+    @shell.cmd_loop
+
+    assert_true(File.exist?(tempfile1.path.to_s))
+    assert_true(File.exist?(tempfile2.path.to_s))
+    assert_equal(File.open(tempfile2.path.to_s).read, 'test content 1')
+  end
 end
