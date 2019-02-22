@@ -8,35 +8,31 @@ Type `help` for a list of available commands.')
     super(prompt, welcome)
 
     @threads = []
-
-    (%w[HUP INT TERM] & Signal.list.keys).each do |signal|
-      trap(signal) do
-        @threads.each do |thread|
-          puts("Killing thread: #{thread}")
-          Thread.kill(thread)
-        end
-      end
-    end
+    @c_behaviours = %w[c create creation]
+    @a_behaviours = %w[a alter alteration m modify modification]
+    @d_behaviours = %w[d destroy destruction delete deletion]
   end
 
   def do_watch(*args)
-    behaviour, duration, filenames = args
+    behaviour, duration, filenames = args[0].split(' ')
 
-    case behaviour
-    when 'c' || 'create' || 'creation'
+    if @c_behaviours.include?(behaviour)
       thread = Thread.start { watch(duration, filenames) }
       puts("Started thread: #{thread}")
-      @threads.append(thread)
-    when 'a' || 'alter' || 'alteration' || 'm' || 'modify' || 'modification'
+      @threads.push(thread)
+    elsif @a_behaviours.include?(behaviour)
       thread = Thread.start { watch(duration, filenames) }
       puts("Started thread: #{thread}")
-      @threads.append(thread)
-    when 'd' || 'destroy' || 'destruction' || 'delete' || 'deletion'
+      @threads.push(thread)
+    elsif @d_behaviours.include?(behaviour)
       thread = Thread.start { watch(duration, filenames) }
       puts("Started thread: #{thread}")
-      @threads.append(thread)
-    else "You gave me #{behaviour} -- I have no idea what to do with that."
+      @threads.push(thread)
+    else
+      "You gave me #{behaviour} -- I have no idea what to do with that."
     end
+
+    false
   end
 
   def help_watch(_)
@@ -48,5 +44,12 @@ Type `help` for a list of available commands.')
 
   def watch(duration, filenames)
     abort
+  end
+
+  def post_loop
+    @threads.each do |thread|
+      puts("Killing thread: #{thread}")
+      Thread.kill(thread)
+    end
   end
 end
