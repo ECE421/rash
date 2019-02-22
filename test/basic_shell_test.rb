@@ -74,7 +74,7 @@ class CmdTest < Test::Unit::TestCase
   def test_cd_pwd
     old_pwd = Dir.pwd
     Readline.stubs(:readline)
-        .returns('cd .', 'exit')
+            .returns('cd .', 'exit')
     @shell.cmd_loop
     new_pwd = Dir.pwd
     assert_equal(old_pwd, new_pwd)
@@ -82,7 +82,7 @@ class CmdTest < Test::Unit::TestCase
 
   def test_cd_dir
     old_pwd = Dir.pwd
-    dir = Dir.mktmpdir("rash_basic_shell_tests-")
+    dir = Dir.mktmpdir('rash_basic_shell_tests-')
     Readline.stubs(:readline)
             .returns('cd ' + dir, 'exit')
     @shell.cmd_loop
