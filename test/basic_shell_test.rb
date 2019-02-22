@@ -60,4 +60,22 @@ class CmdTest < Test::Unit::TestCase
     end
     assert_true(output.to_s.include?(pwd))
   end
+
+  def test_cd_null
+    old_pwd = Dir.pwd
+    Readline.stubs(:readline)
+            .returns('cd  ', 'cd ', 'cd', 'exit')
+    @shell.cmd_loop
+    new_pwd = Dir.pwd
+    assert_equal(old_pwd, new_pwd)
+  end
+
+  def test_cd_pwd
+    old_pwd = Dir.pwd
+    Readline.stubs(:readline)
+        .returns('cd .', 'exit')
+    @shell.cmd_loop
+    new_pwd = Dir.pwd
+    assert_equal(old_pwd, new_pwd)
+  end
 end
