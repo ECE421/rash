@@ -1,5 +1,7 @@
 require 'fileutils'
 
+require 'sys-proctable'
+
 require 'cmd'
 
 # A simple bash like shell made with rash/cmd.rb
@@ -133,5 +135,36 @@ Type `help` for a list of available commands.')
     # TODO: error handling (permission/non-such/non-such-dir)
     file.syswrite(content)
     file.close
+  end
+
+  def do_fork(arg)
+    r, w = IO.pipe
+    pid = Process.spawn(arg, out: w)
+    Process.detach pid
+    puts 'spawned process under pid: '+ pid.to_s
+    w.close
+    r.close
+    false
+  end
+
+  # Usage: kill SIGNAL [PID]...
+  #
+  # Send a system specific SIGNAL to the process(es) specified by the PID(s)
+  def do_kill(arg)
+    signal = arg.split(' ')[0]
+    pids = arg[signal.length+1..-1].split(' ')
+    pids.each do |pid|
+      Process.kill(signal, pid)
+      # TODO: error handling (non-such-signal/non-such-pid)
+    end
+    false
+  end
+
+  # Usage: ps
+  #
+  # Print all the currently running (and visible) processes within the system
+  def do_ps(arg)
+    puts Sys::ProcTable.ps
+    # TODO: format better
   end
 end

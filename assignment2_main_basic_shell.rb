@@ -9,7 +9,6 @@
 #   Zach Drever (1446384)
 #
 
-require 'cmd'
 require 'basic_shell'
 
 shell = BasicShell.new
