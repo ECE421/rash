@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'tmpdir'
 
 class CmdTest < Test::Unit::TestCase
   def setup
@@ -77,5 +78,16 @@ class CmdTest < Test::Unit::TestCase
     @shell.cmd_loop
     new_pwd = Dir.pwd
     assert_equal(old_pwd, new_pwd)
+  end
+
+  def test_cd_dir
+    old_pwd = Dir.pwd
+    dir = Dir.mktmpdir("rash_basic_shell_tests-")
+    Readline.stubs(:readline)
+            .returns('cd ' + dir, 'exit')
+    @shell.cmd_loop
+    new_pwd = Dir.pwd
+    assert_not_equal(old_pwd, new_pwd)
+    FileUtils.rm_rf dir
   end
 end
