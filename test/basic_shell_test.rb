@@ -116,25 +116,16 @@ class BasicShellTest < Test::Unit::TestCase
     Dir.chdir(dir)
     assert_equal(dir, Dir.pwd)
     Readline.stubs(:readline)
-            .returns('touch testfile', 'exit')
+            .returns('touch test_file', 'exit')
     @shell.cmd_loop
-    assert_true(File.exist?('testfile'))
+    assert_true(File.exist?('test_file'))
     Dir.chdir(old_pwd)
     assert_equal(old_pwd, Dir.pwd)
     FileUtils.rm_rf dir
   end
 
-  def create_tempfile_test_file(name, content)
-    tempfile = Tempfile.new(name)
-    tfd = tempfile.open
-    tfd.write(content)
-    tfd.close
-    assert_true(File.exist?(tempfile.path.to_s))
-    tempfile
-  end
-
   def test_cat
-    tempfile = create_tempfile_test_file('testfile', 'test content')
+    tempfile = create_tempfile_test_file('test_file', 'test content')
     Readline.stubs(:readline)
             .returns('cat ' + tempfile.path.to_s, 'exit')
 
@@ -147,8 +138,8 @@ class BasicShellTest < Test::Unit::TestCase
   end
 
   def test_cat_multiple
-    tempfile1 = create_tempfile_test_file('testfile1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('testfile2', 'test content 2')
+    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
+    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
 
     Readline.stubs(:readline)
             .returns('cat ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
@@ -175,7 +166,7 @@ class BasicShellTest < Test::Unit::TestCase
   end
 
   def test_rm
-    tempfile = create_tempfile_test_file('testfile', 'test content')
+    tempfile = create_tempfile_test_file('test_file', 'test content')
     Readline.stubs(:readline)
             .returns('rm ' + tempfile.path.to_s, 'exit')
 
@@ -185,8 +176,8 @@ class BasicShellTest < Test::Unit::TestCase
   end
 
   def test_rm_multiple
-    tempfile1 = create_tempfile_test_file('testfile1', 'test content 1')
-    tempfile2 = create_tempfile_test_file('testfile2', 'test content 2')
+    tempfile1 = create_tempfile_test_file('test_file_1', 'test content 1')
+    tempfile2 = create_tempfile_test_file('test_file_2', 'test content 2')
 
     Readline.stubs(:readline)
             .returns('rm ' + tempfile1.path.to_s + ' ' + tempfile2.path.to_s, 'exit')
