@@ -93,6 +93,8 @@ class BasicShellTest < Test::Unit::TestCase
     @shell.cmd_loop
     new_pwd = Dir.pwd
     assert_not_equal(old_pwd, new_pwd)
+    Dir.chdir(old_pwd)
+    assert_equal(old_pwd, Dir.pwd)
     FileUtils.rm_rf dir
   end
 end
