@@ -1,7 +1,7 @@
 require_relative 'helper'
 require 'tmpdir'
 
-class CmdTest < Test::Unit::TestCase
+class BasicShellTest < Test::Unit::TestCase
   def setup
     @shell = BasicShell.new
   end
