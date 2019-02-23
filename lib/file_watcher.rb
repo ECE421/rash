@@ -8,36 +8,51 @@ Type `help` for a list of available commands.')
     super(prompt, welcome)
 
     @threads = []
-    @c_behaviours = %w[c create creation]
-    @a_behaviours = %w[a alter alteration m modify modification]
-    @d_behaviours = %w[d destroy destruction delete deletion]
+    @valid_c_behaviours = %w[c create creation]
+    @valid_a_behaviours = %w[a alter alteration m modify modification]
+    @valid_d_behaviours = %w[d destroy destruction delete deletion]
+    @valid_actions = %w[print exit]
   end
 
   def do_watch(args_string)
     behaviour, action, duration, *filenames = args_string.split(' ')
 
-    if @c_behaviours.include?(behaviour)
+    puts("Invalid action: '#{action}'. Please use one of: #{@valid_actions}") unless @valid_actions.include?(action)
+    puts("Invalid duration: '#{duration}'. Please use a non-negative integer.") unless duration.to_i.positive?
+    puts('Please specify one or more filenames to watch.') unless filenames.length.positive?
+
+    if @valid_c_behaviours.include?(behaviour)
       thread = Thread.start { watch_create(filenames, action, duration.to_i) }
       @threads.push(thread)
-    elsif @a_behaviours.include?(behaviour)
+    elsif @valid_a_behaviours.include?(behaviour)
       thread = Thread.start { watch_alter(filenames, action, duration.to_i) }
       @threads.push(thread)
-    elsif @d_behaviours.include?(behaviour)
+    elsif @valid_d_behaviours.include?(behaviour)
       thread = Thread.start { watch_delete(filenames, action, duration.to_i) }
       @threads.push(thread)
     else
-      puts("Invalid behaviour: '#{behaviour}'. Please use watch with one of the following behaviours:")
-      puts("\tCreate: #{@c_behaviours}")
-      puts("\tAlter/Modify: #{@a_behaviours}")
-      puts("\tDelete: #{@d_behaviours}")
+      puts("Invalid behaviour: '#{behaviour}'. Please use one of the following behaviours:")
+      puts("\tCreate: #{@valid_c_behaviours}")
+      puts("\tAlter/Modify: #{@valid_a_behaviours}")
+      puts("\tDelete: #{@valid_d_behaviours}")
     end
 
     false
   end
 
   def help_watch(_)
-    puts('Usage: watch [BEHAVIOUR] [ACTION] [DURATION] *[FILENAMES]')
+    puts('Usage: watch [BEHAVIOUR] [ACTION] [DURATION] [*FILENAMES]')
     puts('Description: Watch files denoted by FILENAMES for BEHAVIOUR.')
+    puts('BEHAVIOUR:')
+    puts("\tCreate: #{@valid_c_behaviours}")
+    puts("\tAlter/Modify: #{@valid_a_behaviours}")
+    puts("\tDelete: #{@valid_d_behaviours}")
+    puts('ACTION:')
+    puts("\t#{@valid_actions}")
+    puts('DURATION:')
+    puts("\tAny non-negative integer.")
+    puts('*FILENAMES:')
+    puts("\tA space-separated list of files to watch.")
   end
 
   private
@@ -97,11 +112,13 @@ Type `help` for a list of available commands.')
   end
 
   def action_after_change(action, duration)
-    # Hello, security vulnerability!
     sleep(duration)
-    proc {
-      eval(action)
-    }.call
+    if action == 'print'
+      # TODO
+      puts('FILE CHANGE INFORMATION')
+    elsif action == 'exit'
+      do_exit('')
+    end
   end
 
   def post_loop
