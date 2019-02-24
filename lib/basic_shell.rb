@@ -11,7 +11,7 @@ class BasicShell < Cmd
 Type `help` for a list of available commands.')
     @prompt = prompt
     @welcome = welcome
-
+    @threads = []
     init_line_reader
   end
 
@@ -171,5 +171,19 @@ Type `help` for a list of available commands.')
   def do_ps(arg)
     puts Sys::ProcTable.ps
     # TODO: format better
+  end
+
+  # Usage: print SECONDS TEXT
+  #
+  # Wait the alloted time and then print the given message to STDOUT
+  def do_print(arg)
+    time = arg.split(' ')[0].to_f
+    message = arg.split(' ')[1..-1].join(' ')
+    @threads << Thread.new do
+      # TODO: handle exceptions
+      sleep time
+      puts "\n" + message
+    end
+    false
   end
 end
