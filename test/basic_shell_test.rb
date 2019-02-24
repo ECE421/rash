@@ -206,4 +206,20 @@ class BasicShellTest < Test::Unit::TestCase
     assert_true(File.exist?(test_file2.path.to_s))
     assert_equal(File.open(test_file2.path.to_s).read, 'test content 1')
   end
+
+  def test_print
+    Readline.stubs(:readline)
+            .returns('print 3 message', 'exit')
+    @shell.cmd_loop
+    out = StringIO.new
+    $stdout = out
+    assert_true(Thread.main.status == 'run')
+    Thread.list.each { |thr| assert_true(thr.status == 'run' || thr.status == 'sleep') }
+    start = Time.now
+    sleep 0.01 until $stdout.string != ''
+    assert_true(Time.now - start > 3 && Time.now - start < 3.015, Time.now - start)
+    Thread.list.each { |thr| assert_true(thr.status == 'run' || thr.status == 'false') }
+    assert_true($stdout.string == "\nmessage\n")
+    $stdout = STDOUT
+  end
 end
