@@ -2,6 +2,8 @@ require 'cmd'
 
 # A simple shell implementation of a file watcher program in Ruby
 class FileWatcher < Cmd
+  attr_reader(:valid_c_behaviours, :valid_a_behaviours, :valid_d_behaviours, :valid_actions)
+
   def initialize(prompt = 'rashfw> ',
                  welcome = 'Welcome to the Ruby file watcher shell.
 Type `help` for a list of available commands.')
@@ -17,8 +19,8 @@ Type `help` for a list of available commands.')
   def do_watch(args_string)
     behaviour, action, duration, *filenames = args_string.split(' ')
 
-    puts("Invalid action: '#{action}'. Please use one of: #{@valid_actions}") unless @valid_actions.include?(action)
-    puts("Invalid duration: '#{duration}'. Please use a non-negative integer.") unless duration.to_i.positive?
+    puts("Invalid action: #{action}. Please use one of: #{@valid_actions}") unless @valid_actions.include?(action)
+    puts("Invalid duration: #{duration}. Please use a non-negative integer.") unless duration.to_i.positive?
     puts('Please specify one or more filenames to watch.') unless filenames.length.positive?
 
     if @valid_c_behaviours.include?(behaviour)
@@ -31,7 +33,7 @@ Type `help` for a list of available commands.')
       thread = Thread.start { watch_delete(filenames, action, duration.to_i) }
       @threads.push(thread)
     else
-      puts("Invalid behaviour: '#{behaviour}'. Please use one of the following behaviours:")
+      puts("Invalid behaviour: #{behaviour}. Please use one of the following behaviours:")
       puts("\tCreate: #{@valid_c_behaviours}")
       puts("\tAlter/Modify: #{@valid_a_behaviours}")
       puts("\tDelete: #{@valid_d_behaviours}")
