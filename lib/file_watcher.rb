@@ -20,7 +20,7 @@ Type `help` for a list of available commands.')
     behaviour, action, duration, *filenames = args_string.split(' ')
 
     puts("Invalid action: #{action}. Please use one of: #{@valid_actions}") unless @valid_actions.include?(action)
-    puts("Invalid duration: #{duration}. Please use a non-negative integer.") unless duration.to_i.positive?
+    puts("Invalid duration: #{duration}. Please use a non-negative integer.") unless duration.to_i >= 0
     puts('Please specify one or more filenames to watch.') unless filenames.length.positive?
 
     if @valid_c_behaviours.include?(behaviour)
@@ -55,6 +55,14 @@ Type `help` for a list of available commands.')
     puts("\tAny non-negative integer.")
     puts('*FILENAMES:')
     puts("\tA space-separated list of files to watch.")
+  end
+
+  def do_status(_)
+    false
+  end
+
+  def help_status(_)
+    false
   end
 
   private
