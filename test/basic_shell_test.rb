@@ -216,10 +216,13 @@ class BasicShellTest < Test::Unit::TestCase
     assert_true(Thread.main.status == 'run')
     Thread.list.each { |thr| assert_true(thr.status == 'run' || thr.status == 'sleep') }
     start = Time.now
-    sleep 0.01 until $stdout.string != ''
-    assert_true(Time.now - start > 3 && Time.now - start < 3.015, Time.now - start)
-    Thread.list.each { |thr| assert_true(thr.status == 'run' || thr.status == 'false') }
-    assert_true($stdout.string == "\nmessage\n")
+    begin
+      sleep 10
+    rescue Interrupt
+      assert_true(Time.now - start > 3 && Time.now - start < 3.015, Time.now - start)
+      Thread.list.each { |thr| assert_true(thr.status == 'run' || thr.status == 'false') }
+      assert_true($stdout.string == "\nmessage\n")
+    end
     $stdout = STDOUT
   end
 end

@@ -182,6 +182,7 @@ Type `help` for a list of available commands.')
     @threads << Thread.new do
       # TODO: handle exceptions
       sleep time
+      Thread.main.raise Interrupt
       puts "\n" + message
     end
     false

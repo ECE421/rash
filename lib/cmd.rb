@@ -26,23 +26,28 @@ Type `help` for a list of available commands.')
 
     puts(@welcome)
 
-    while (input = Readline.readline(@prompt, true))
-      # Remove blank lines from history and skip executing this command
-      if /^\s*$/.match?(input)
-        Readline::HISTORY.pop
+    loop do
+      begin
+        input = Readline.readline(@prompt, true)
+        # Remove blank lines from history and skip executing this command
+        if /^\s*$/.match?(input)
+          Readline::HISTORY.pop
+          next
+        end
+
+        pre_cmd(input)
+        command_name = input.split(' ')[0]
+        command_args = input[input.split(' ')[0].length..-1].lstrip
+        if !(command_method = get_command_method_symbol(command_name)).nil?
+          break if send(command_method, command_args)
+        elsif on_unknown_cmd(input)
+          break
+        end
+
+        post_cmd(input)
+      rescue Interrupt
         next
       end
-
-      pre_cmd(input)
-      command_name = input.split(' ')[0]
-      command_args = input[input.split(' ')[0].length..-1].lstrip
-      if !(command_method = get_command_method_symbol(command_name)).nil?
-        break if send(command_method, command_args)
-      elsif on_unknown_cmd(input)
-        break
-      end
-
-      post_cmd(input)
     end
 
     post_loop
