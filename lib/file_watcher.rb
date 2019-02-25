@@ -84,8 +84,6 @@ class FileWatcher < Cmd
   def help_status(_)
     puts('Usage: status')
     puts('Description: Prints the status of all watched files.')
-
-    false
   end
 
   private
