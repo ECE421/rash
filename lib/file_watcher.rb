@@ -1,4 +1,5 @@
-require 'cmd'
+require_relative '../lib/cmd'
+require 'readline'
 
 # A simple shell implementation of a file watcher program in Ruby
 class FileWatcher < Cmd
@@ -9,6 +10,7 @@ class FileWatcher < Cmd
 Type `help` for a list of available commands.')
     super(prompt, welcome)
 
+    @watched_files_status = {}
     @threads = []
     @valid_c_behaviours = %w[c create creation]
     @valid_a_behaviours = %w[a alter alteration m modify modification]
@@ -19,18 +21,34 @@ Type `help` for a list of available commands.')
   def do_watch(args_string)
     behaviour, action, duration, *filenames = args_string.split(' ')
 
-    puts("Invalid action: #{action}. Please use one of: #{@valid_actions}") unless @valid_actions.include?(action)
-    puts("Invalid duration: #{duration}. Please use a non-negative integer.") unless duration.to_i >= 0
-    puts('Please specify one or more filenames to watch.') unless filenames.length.positive?
+    unless @valid_actions.include?(action)
+      puts("Invalid action: #{action}. Please use one of: #{@valid_actions}")
+      return false
+    end
+
+    begin
+      unless Integer(duration) >= 0
+        puts("Invalid duration: #{duration}. Please use a non-negative integer.")
+        return false
+      end
+    rescue ArgumentError
+      puts("Invalid duration: #{duration}. Please use a non-negative integer.")
+      return false
+    end
+
+    unless filenames.length.positive?
+      puts('Please specify one or more filenames to watch.')
+      return false
+    end
 
     if @valid_c_behaviours.include?(behaviour)
-      thread = Thread.start { watch_create(filenames, action, duration.to_i) }
+      thread = Thread.start { watch_create(filenames, action, Integer(duration)) }
       @threads.push(thread)
     elsif @valid_a_behaviours.include?(behaviour)
-      thread = Thread.start { watch_alter(filenames, action, duration.to_i) }
+      thread = Thread.start { watch_alter(filenames, action, Integer(duration)) }
       @threads.push(thread)
     elsif @valid_d_behaviours.include?(behaviour)
-      thread = Thread.start { watch_delete(filenames, action, duration.to_i) }
+      thread = Thread.start { watch_delete(filenames, action, Integer(duration)) }
       @threads.push(thread)
     else
       puts("Invalid behaviour: #{behaviour}. Please use one of the following behaviours:")
@@ -58,28 +76,39 @@ Type `help` for a list of available commands.')
   end
 
   def do_status(_)
+    @watched_files_status.each do |filename, status|
+      puts("#{filename}: #{status}")
+    end
+
     false
   end
 
   def help_status(_)
+    puts('Usage: status')
+    puts('Description: Prints the status of all watched files.')
+
     false
   end
 
   private
 
   def watch_create(filenames, action, duration)
+    created = []
     filenames.each do |file|
+      @watched_files_status[file] = 'File not created yet.'
+
       next unless File.exist?(file)
 
-      filenames.pop(file)
+      created.push(file)
+      @watched_files_status[file] = "File already existed. Last modified: #{File.mtime(file)}"
     end
 
-    created = []
     until created.eql?(filenames)
       filenames.each do |file|
-        next unless File.exist?(file)
+        next unless File.exist?(file) && !created.include?(file)
 
         created.push(file)
+        @watched_files_status[file] = "File created at: #{File.mtime(file)}"
         action_after_change(action, duration)
       end
     end
@@ -88,6 +117,7 @@ Type `help` for a list of available commands.')
   def watch_alter(filenames, action, duration)
     last_snapshots = {}
     filenames.each do |file|
+      # TODO:
       abort unless File.exist?(file)
       last_snapshots[file] = File.mtime(file)
     end
@@ -104,6 +134,7 @@ Type `help` for a list of available commands.')
   end
 
   def watch_delete(filenames, action, duration)
+    # TODO: Status
     filenames.each do |file|
       next if File.exist?(file)
 
@@ -124,10 +155,9 @@ Type `help` for a list of available commands.')
   def action_after_change(action, duration)
     sleep(duration)
     if action == 'print'
-      # TODO
-      puts('FILE CHANGE INFORMATION')
+      do_status(nil)
     elsif action == 'exit'
-      do_exit('')
+      do_exit(nil)
     end
   end
 

@@ -9,7 +9,7 @@
 #   Zach Drever (1446384)
 #
 
-require 'file_watcher'
+require_relative 'lib/file_watcher'
 
 shell = FileWatcher.new
 shell.cmd_loop
