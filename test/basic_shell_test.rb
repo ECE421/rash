@@ -225,4 +225,34 @@ class BasicShellTest < Test::Unit::TestCase
     end
     $stdout = STDOUT
   end
+
+  def test_print_argerror1
+    Readline.stubs(:readline)
+            .returns('print asdfa message', 'exit')
+    out = StringIO.new
+    $stdout = out
+    @shell.cmd_loop
+    assert_equal(
+      "Welcome to the Ruby basic shell.\n" \
+      "Type `help` for a list of available commands.\n" \
+      "Error: Provide a numeric delay to command: print\n",
+      $stdout.string
+    )
+    $stdout = STDOUT
+  end
+
+  def test_print_argerror2
+    Readline.stubs(:readline)
+            .returns('print 1', 'exit')
+    out = StringIO.new
+    $stdout = out
+    @shell.cmd_loop
+    assert_equal(
+      "Welcome to the Ruby basic shell.\n" \
+      "Type `help` for a list of available commands.\n" \
+      "Error: Provide a message to command: print\n",
+      $stdout.string
+    )
+    $stdout = STDOUT
+  end
 end
