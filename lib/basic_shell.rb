@@ -137,8 +137,6 @@ class BasicShell < Cmd
   #
   # Fork and run the raw system COMMAND as a detached process.
   def do_fork(arg)
-    # TODO: it should really spawn a subshell of BasicShell and not go directly to system
-    # TODO: though im having difficulty thinking of a nice way to do that.
     r, w = IO.pipe
     pid = Process.spawn(arg, out: w)
     Process.detach pid
