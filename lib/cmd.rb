@@ -26,7 +26,8 @@ Type `help` for a list of available commands.')
 
     puts(@welcome)
 
-    while (input = Readline.readline(@prompt, true))
+    loop do
+      input = Readline.readline(@prompt, true)
       # Remove blank lines from history and skip executing this command
       if /^\s*$/.match?(input)
         Readline::HISTORY.pop
@@ -43,6 +44,8 @@ Type `help` for a list of available commands.')
       end
 
       post_cmd(input)
+    rescue Interrupt
+      next
     end
 
     post_loop

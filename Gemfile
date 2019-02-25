@@ -10,5 +10,6 @@ gem 'test-unit', require: false, group: :test
 gem 'method_source'
 gem 'rake'
 gem 'sys-proctable'
+gem 'thread'
 
 gemspec
