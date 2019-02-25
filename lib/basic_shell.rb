@@ -186,7 +186,7 @@ Type `help` for a list of available commands.')
     @threads << Thread.new do
       sleep time.to_f
       puts "\n" + message.join(' ')
-      Thread.main.raise Interrupt
+      print(@prompt)
     end
     false
   end

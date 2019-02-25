@@ -44,8 +44,7 @@ Type `help` for a list of available commands.')
       end
 
       post_cmd(input)
-    rescue Interrupt
-      next
+
     rescue ArgumentError => e
       puts e
     end
