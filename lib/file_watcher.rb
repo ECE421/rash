@@ -3,7 +3,7 @@ require 'readline'
 
 # A simple shell implementation of a file watcher program in Ruby
 class FileWatcher < Cmd
-  attr_reader(:valid_c_behaviours, :valid_a_behaviours, :valid_d_behaviours, :valid_actions)
+  attr_reader(:watched_files_status, :valid_c_behaviours, :valid_a_behaviours, :valid_d_behaviours, :valid_actions)
 
   def initialize(prompt = 'rashfw> ',
                  welcome = 'Welcome to the Ruby file watcher shell.
@@ -119,7 +119,7 @@ Type `help` for a list of available commands.')
     filenames.each do |file|
       if File.exist?(file)
         last_snapshots[file] = File.mtime(file)
-        @watched_files_status[file] = "File not modified since the start of the watcher. File last modified at: #{File.mtime(file)}"
+        @watched_files_status[file] = "File not modified since latest watch dispatched. File last modified at: #{File.mtime(file)}"
       else
         @watched_files_status[file] = 'File does not exist.'
       end
@@ -132,6 +132,8 @@ Type `help` for a list of available commands.')
         modified.push(file)
         @watched_files_status[file] = "File last modified at: #{File.mtime(file)}"
         action_after_change(action, duration)
+      rescue SystemCallError
+        next
       end
     end
   end
@@ -160,7 +162,7 @@ Type `help` for a list of available commands.')
   def action_after_change(action, duration)
     sleep(duration)
     if %w[print status].include?(action)
-      print("\n")
+      puts
 
       @watched_files_status.each do |filename, status|
         puts("#{filename}: #{status}")
@@ -168,13 +170,12 @@ Type `help` for a list of available commands.')
 
       print(@prompt)
     elsif action == 'exit'
-      do_exit(nil)
+      abort
     end
   end
 
   def post_loop
     @threads.each do |thread|
-      puts("Killing thread: #{thread}")
       Thread.kill(thread)
     end
   end
