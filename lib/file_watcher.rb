@@ -15,7 +15,7 @@ Type `help` for a list of available commands.')
     @valid_c_behaviours = %w[c create creation]
     @valid_a_behaviours = %w[a alter alteration m modify modification]
     @valid_d_behaviours = %w[d destroy destruction delete deletion]
-    @valid_actions = %w[print exit]
+    @valid_actions = %w[print status exit]
   end
 
   def do_watch(args_string)
@@ -96,7 +96,6 @@ Type `help` for a list of available commands.')
     created = []
     filenames.each do |file|
       @watched_files_status[file] = 'File not created yet.'
-
       next unless File.exist?(file)
 
       created.push(file)
@@ -115,38 +114,43 @@ Type `help` for a list of available commands.')
   end
 
   def watch_alter(filenames, action, duration)
+    modified = []
     last_snapshots = {}
     filenames.each do |file|
-      # TODO:
-      abort unless File.exist?(file)
-      last_snapshots[file] = File.mtime(file)
+      if File.exist?(file)
+        last_snapshots[file] = File.mtime(file)
+        @watched_files_status[file] = "File not modified since the start of the watcher. File last modified at: #{File.mtime(file)}"
+      else
+        @watched_files_status[file] = 'File does not exist.'
+      end
     end
 
-    until last_snapshots.empty?
+    until modified.eql?(last_snapshots.keys)
       last_snapshots.each do |file, last_snapshot|
         next unless (File.mtime(file) <=> last_snapshot).positive?
 
-        # File has been modified
-        last_snapshots.delete(file)
+        modified.push(file)
+        @watched_files_status[file] = "File last modified at: #{File.mtime(file)}"
         action_after_change(action, duration)
       end
     end
   end
 
   def watch_delete(filenames, action, duration)
-    # TODO: Status
+    deleted = []
     filenames.each do |file|
       next if File.exist?(file)
 
-      filenames.pop(file)
+      @watched_files_status[file] = 'File did not exist when command was issued.'
+      deleted.push(file)
     end
 
-    deleted = []
     until deleted.eql?(filenames)
       filenames.each do |file|
         next if File.exist?(file)
 
         deleted.push(file)
+        @watched_files_status[file] = "File deleted at: #{Time.now}"
         action_after_change(action, duration)
       end
     end
@@ -154,7 +158,7 @@ Type `help` for a list of available commands.')
 
   def action_after_change(action, duration)
     sleep(duration)
-    if action == 'print'
+    if %w[print status].include?(action)
       do_status(nil)
     elsif action == 'exit'
       do_exit(nil)
