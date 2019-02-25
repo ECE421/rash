@@ -166,13 +166,16 @@ Type `help` for a list of available commands.')
   #
   # Wait the alloted time and then print the given message to STDOUT
   def do_print(arg)
-    time = arg.split(' ')[0].to_f
-    message = arg.split(' ')[1..-1].join(' ')
+    time = arg.split(' ')[0]
+    message = arg.split(' ')[1..-1]
+
+    raise ArgumentError, 'Error: Provide a numeric delay to command: print' unless /\A\d+\z/ =~ time
+    raise ArgumentError, 'Error: Provide a message to command: print' if message.empty?
+
     @threads << Thread.new do
-      # TODO: handle exceptions
-      sleep time
-      Thread.main.raise Interrupt
-      puts "\n" + message
+      sleep time.to_f
+      puts "\n" + message.join(' ')
+      print(@prompt)
     end
     false
   end
