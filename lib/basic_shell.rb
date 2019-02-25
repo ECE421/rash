@@ -32,7 +32,6 @@ Type `help` for a list of available commands.')
       puts Dir.entries(Dir.pwd)
     else
       puts Dir.entries(arg)
-      # TODO: error handling (permission/non-such)
     end
   end
 
@@ -43,7 +42,6 @@ Type `help` for a list of available commands.')
     return false if arg == ''
 
     Dir.chdir(arg)
-    # TODO: error handling (permission/non-such)
     false
   end
 
@@ -52,7 +50,6 @@ Type `help` for a list of available commands.')
   # Create one or more DIRECTORIES.
   def do_mkdir(arg)
     FileUtils.mkdir arg.split(' ')
-    # TODO: error handling (permission/already exists)
     false
   end
 
@@ -61,7 +58,6 @@ Type `help` for a list of available commands.')
   # Removes one or more DIRECTORIES.
   def do_rmdir(arg)
     FileUtils.rmdir arg.split(' ')
-    # TODO: error handling (permission/non-such)
     false
   end
 
@@ -70,7 +66,6 @@ Type `help` for a list of available commands.')
   # Remove one or more FILE(s).
   def do_rm(arg)
     FileUtils.rm arg.split(' ')
-    # TODO: error handling (permission/non-such)
     false
   end
 
@@ -80,7 +75,6 @@ Type `help` for a list of available commands.')
   def do_mv(arg)
     args = arg.split(' ')
     FileUtils.mv args[0], args[1]
-    # TODO: error handling (permission/non-such/non-such-dir)
     false
   end
 
@@ -90,7 +84,6 @@ Type `help` for a list of available commands.')
   def do_cp(arg)
     args = arg.split(' ')
     FileUtils.cp args[0], args[1]
-    # TODO: error handling (permission/non-such/non-such-dir)
     false
   end
 
@@ -101,7 +94,6 @@ Type `help` for a list of available commands.')
     args = arg.split(' ')
     args.each do |filename|
       file = File.open(filename)
-      # TODO: error handling (permission/non-such)
       file.readlines.each(&method(:puts))
       file.close
     end
@@ -117,7 +109,6 @@ Type `help` for a list of available commands.')
     args = arg.split(' ')
     args.each do |filename|
       file = File.open(filename, mode = 'w') # rubocop:disable Lint/UselessAssignment:
-      # TODO: error handling (permission/non-such/non-such-dir)
       file.close
     end
     false
@@ -132,7 +123,6 @@ Type `help` for a list of available commands.')
     filename = arg.split(' ')[0]
     content = arg[filename.length + 1..-1]
     file = File.open(filename, mode = 'w') # rubocop:disable Lint/UselessAssignment:
-    # TODO: error handling (permission/non-such/non-such-dir)
     file.syswrite(content)
     file.close
   end
@@ -160,7 +150,6 @@ Type `help` for a list of available commands.')
     pids = arg[signal.length + 1..-1].split(' ')
     pids.each do |pid|
       Process.kill(signal, pid)
-      # TODO: error handling (non-such-signal/non-such-pid)
     end
     false
   end
