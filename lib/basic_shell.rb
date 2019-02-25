@@ -51,9 +51,13 @@ Type `help` for a list of available commands.')
   #
   # Create one or more DIRECTORIES.
   def do_mkdir(arg)
-    FileUtils.mkdir arg.split(' ')
-    # TODO: error handling (permission/already exists)
-    false
+    begin
+      FileUtils.mkdir arg.split(' ')
+    rescue Errno::EEXIST => e
+      puts e
+    ensure
+      false
+    end
   end
 
   # Usage: rmdir [DIRECTORIES]...
