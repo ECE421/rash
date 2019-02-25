@@ -27,12 +27,12 @@ Type `help` for a list of available commands.')
     end
 
     begin
-      unless Integer(duration) >= 0
-        puts("Invalid duration: #{duration}. Please use a non-negative integer.")
+      unless Float(duration) >= 0
+        puts("Invalid duration: #{duration}. Please use a non-negative float.")
         return false
       end
     rescue ArgumentError
-      puts("Invalid duration: #{duration}. Please use a non-negative integer.")
+      puts("Invalid duration: #{duration}. Please use a non-negative float.")
       return false
     end
 
@@ -42,13 +42,13 @@ Type `help` for a list of available commands.')
     end
 
     if @valid_c_behaviours.include?(behaviour)
-      thread = Thread.start { watch_create(filenames, action, Integer(duration)) }
+      thread = Thread.start { watch_create(filenames, action, Float(duration)) }
       @threads.push(thread)
     elsif @valid_a_behaviours.include?(behaviour)
-      thread = Thread.start { watch_alter(filenames, action, Integer(duration)) }
+      thread = Thread.start { watch_alter(filenames, action, Float(duration)) }
       @threads.push(thread)
     elsif @valid_d_behaviours.include?(behaviour)
-      thread = Thread.start { watch_delete(filenames, action, Integer(duration)) }
+      thread = Thread.start { watch_delete(filenames, action, Float(duration)) }
       @threads.push(thread)
     else
       puts("Invalid behaviour: #{behaviour}. Please use one of the following behaviours:")
@@ -139,6 +139,7 @@ Type `help` for a list of available commands.')
   def watch_delete(filenames, action, duration)
     deleted = []
     filenames.each do |file|
+      @watched_files_status[file] = 'File currently exists.'
       next if File.exist?(file)
 
       @watched_files_status[file] = 'File did not exist when command was issued.'
@@ -159,7 +160,13 @@ Type `help` for a list of available commands.')
   def action_after_change(action, duration)
     sleep(duration)
     if %w[print status].include?(action)
-      do_status(nil)
+      print("\n")
+
+      @watched_files_status.each do |filename, status|
+        puts("#{filename}: #{status}")
+      end
+
+      print(@prompt)
     elsif action == 'exit'
       do_exit(nil)
     end
