@@ -44,7 +44,7 @@ Type `help` for a list of available commands.')
       end
 
       post_cmd(input)
-    rescue Errno:: => e
+    rescue SystemCallError => e
       puts e
     rescue Interrupt
       next
