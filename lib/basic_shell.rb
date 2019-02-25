@@ -2,7 +2,7 @@ require 'fileutils'
 
 require 'sys-proctable'
 
-require_relative '../lib/cmd'
+require 'cmd'
 
 # A simple bash like shell made with rash/cmd.rb
 class BasicShell < Cmd

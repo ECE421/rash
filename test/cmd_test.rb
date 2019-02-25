@@ -1,4 +1,4 @@
-require_relative 'helper'
+require 'helper'
 
 class CmdTest < Test::Unit::TestCase
   def setup

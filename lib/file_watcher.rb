@@ -1,4 +1,4 @@
-require_relative '../lib/cmd'
+require 'cmd'
 require 'readline'
 
 # A simple shell implementation of a file watcher program in Ruby

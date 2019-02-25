@@ -1,4 +1,4 @@
-require_relative 'helper'
+require 'helper'
 require 'tmpdir'
 
 class BasicShellTest < Test::Unit::TestCase
