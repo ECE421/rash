@@ -6,6 +6,9 @@ require 'cmd'
 
 # A simple bash like shell made with rash/cmd.rb
 class BasicShell < Cmd
+
+  MAX_PRINT_SIZE = 100
+
   def initialize(prompt = 'rashbs> ',
                  welcome = 'Welcome to the Ruby basic shell.
 Type `help` for a list of available commands.')
@@ -170,7 +173,6 @@ Type `help` for a list of available commands.')
   # Print all the currently running (and visible) processes within the system
   def do_ps(arg)
     puts Sys::ProcTable.ps
-    # TODO: format better
   end
 
   # Usage: print SECONDS TEXT
@@ -182,6 +184,7 @@ Type `help` for a list of available commands.')
 
     raise ArgumentError, 'Error: Provide a numeric delay to command: print' unless /\A\d+\z/ =~ time
     raise ArgumentError, 'Error: Provide a message to command: print' if message.empty?
+    raise SecurityError, 'Error: Message too long, security risk to command: print' if message.join(' ').size > MAX_PRINT_SIZE
 
     @threads << Thread.new do
       sleep time.to_f

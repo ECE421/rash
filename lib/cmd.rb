@@ -47,6 +47,8 @@ Type `help` for a list of available commands.')
 
     rescue ArgumentError => e
       puts e
+    rescue SecurityError => e
+      puts e
     end
 
     post_loop
