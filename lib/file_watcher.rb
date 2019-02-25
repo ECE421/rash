@@ -5,10 +5,8 @@ require 'readline'
 class FileWatcher < Cmd
   attr_reader(:watched_files_status, :valid_c_behaviours, :valid_a_behaviours, :valid_d_behaviours, :valid_actions)
 
-  def initialize(prompt = 'rashfw> ',
-                 welcome = 'Welcome to the Ruby file watcher shell.
-Type `help` for a list of available commands.')
-    super(prompt, welcome)
+  def initialize
+    super('rashfw> ', 'Welcome to the Ruby file watcher shell. Type `help` for a list of available commands.')
 
     @watched_files_status = {}
     @threads = []
