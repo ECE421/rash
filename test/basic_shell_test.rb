@@ -15,9 +15,6 @@ class BasicShellTest < Test::Unit::TestCase
     assert_true(@shell.is_a?(BasicShell))
   end
 
-  # Smokes that ensure functionality from Cmd is maintained
-  # TODO: is there a better way to test this with inheritance?
-
   def test_exit
     Readline.expects(:readline)
             .returns('exit')
