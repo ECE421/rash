@@ -44,6 +44,8 @@ Type `help` for a list of available commands.')
       end
 
       post_cmd(input)
+    rescue Errno::ENOENT, Errno::ENOTDIR, Errno::EEXIST, Errno::EACCES, Errno::EPERM => e
+      puts e
     rescue Interrupt
       next
     end
