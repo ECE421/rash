@@ -1,3 +1,5 @@
+# Run a Ruby built basic shell.
+#
 # This Library was made by:
 #
 # Group 4:
@@ -7,7 +9,7 @@
 #   Zach Drever (1446384)
 #
 
-require_relative 'lib/cmd'
+require_relative 'lib/file_watcher'
 
-shell = Cmd.new
+shell = FileWatcher.new
 shell.cmd_loop

@@ -24,3 +24,4 @@ require 'mocha/test_unit'
 
 require 'cmd'
 require 'basic_shell'
+require 'file_watcher'
