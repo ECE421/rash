@@ -46,8 +46,8 @@ Type `help` for a list of available commands.')
       post_cmd(input)
     rescue SystemCallError => e
       puts e
-    rescue Interrupt
-      next
+    rescue ArgumentError => e
+      puts e
     end
 
     post_loop
