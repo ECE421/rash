@@ -108,7 +108,7 @@ class BasicShellTest < Test::Unit::TestCase
     test_file = create_tempfile_test_file('test_file', 'test content')
 
     Readline.stubs(:readline)
-      .returns('watch create exit 1 ' + test_file.path.to_s, 'exit')
+            .returns('watch create exit 1 ' + test_file.path.to_s, 'exit')
     @shell.cmd_loop
   end
 
@@ -116,7 +116,7 @@ class BasicShellTest < Test::Unit::TestCase
     test_file = create_tempfile_test_file('test_file', 'test content')
 
     Readline.stubs(:readline)
-      .returns('watch alter print 1 ' + test_file.path.to_s, 'exit')
+            .returns('watch alter print 1 ' + test_file.path.to_s, 'exit')
     @shell.cmd_loop
   end
 
@@ -124,7 +124,7 @@ class BasicShellTest < Test::Unit::TestCase
     test_file = create_tempfile_test_file('test_file', 'test content')
 
     Readline.stubs(:readline)
-      .returns('watch delete print 1 ' + test_file.path.to_s, 'exit')
+            .returns('watch delete print 1 ' + test_file.path.to_s, 'exit')
     @shell.cmd_loop
   end
 
