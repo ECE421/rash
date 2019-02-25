@@ -48,4 +48,10 @@ class CmdTest < Test::Unit::TestCase
             .returns('', '  ', '   ', 'history', 'exit')
     @shell.cmd_loop
   end
+
+  def test_basic_shell_errors
+    Readline.stubs(:readline)
+            .returns('rm not_a_file', 'exit')
+    @shell.cmd_loop
+  end
 end
