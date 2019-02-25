@@ -107,6 +107,30 @@ class BasicShellTest < Test::Unit::TestCase
     @shell.cmd_loop
   end
 
+  def test_smoke_watch_create
+    test_file = create_tempfile_test_file('test_file', 'test content')
+
+    Readline.stubs(:readline)
+      .returns('watch create exit 1 ' + test_file.path.to_s, 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_watch_alter
+    test_file = create_tempfile_test_file('test_file', 'test content')
+
+    Readline.stubs(:readline)
+      .returns('watch alter print 1 ' + test_file.path.to_s, 'exit')
+    @shell.cmd_loop
+  end
+
+  def test_smoke_watch_delete
+    test_file = create_tempfile_test_file('test_file', 'test content')
+
+    Readline.stubs(:readline)
+      .returns('watch delete print 1 ' + test_file.path.to_s, 'exit')
+    @shell.cmd_loop
+  end
+
   def test_touch
     old_pwd = Dir.pwd
     tmpdir = Dir.mktmpdir('rash_basic_shell_tests-')

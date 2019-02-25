@@ -7,7 +7,7 @@
 #   Zach Drever (1446384)
 #
 
-require_relative 'lib/cmd'
+require_relative 'lib/basic_shell'
 
-shell = Cmd.new
+shell = BasicShell.new
 shell.cmd_loop
